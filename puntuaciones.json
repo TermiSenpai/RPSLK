@@ -1,0 +1,26 @@
+{
+    "lolo": {
+        "games": 2,
+        "wins": 1,
+        "loses": 1,
+        "draws": 0
+    },
+    "Alejandro": {
+        "games": 25,
+        "wins": 13,
+        "loses": 7,
+        "draws": 5
+    },
+    "": {
+        "games": 0,
+        "wins": 0,
+        "loses": 0,
+        "draws": 0
+    },
+    "alejandro": {
+        "games": 1,
+        "wins": 1,
+        "loses": 0,
+        "draws": 0
+    }
+}
