@@ -20,6 +20,3 @@ class SaveManager():
         with open("puntuacion.json", "r") as readFile:
             puntuacion = json.load(readFile)
             return puntuacion
-        
-        
-        
