@@ -13,8 +13,14 @@ TO DO LIST:
     - Audio
     - tutorial
     - Online
-'''
 
+    
+    tiempo de ejecucion
+    cantidad de teclas (total, buenas)
+    salvar stats
+    recuperar stats
+'''
+import time
 import json
 import os
 import sys
@@ -74,8 +80,20 @@ def clearScreen():
 
 
 def closeGame():
+    
     if SAVE_ON_EXIT:
         saveGame()
+    clearScreen()
+    elapsedTime = (time.time() - startTime)
+    seconds = {"seconds": elapsedTime}
+    print(msg["time"].format(**seconds))
+    
+    
+    """{var1}".format({"var1":"foo"})
+    msg["elapsedTime"].format({"elapsedTime": elapsedTime})
+    """
+    
+    input()
     clearScreen()
     print(msg["exit"])
     input()
@@ -107,6 +125,8 @@ def main():
         input(msg["continue"])
         # borramos la pantalla para mayor comodidad del usuario
         clearScreen()
+
+startTime = time.time()
 
 clearScreen()
 player = str(input(msg["jugador"]))
