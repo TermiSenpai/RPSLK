@@ -31,9 +31,10 @@ from messages import msg
 
 
 answer = ["Y", "N"]
-FILE = "puntuaciones.json"
+FILE = "Saves.json"
+totalTime = 0.0
 
-SAVE_ON_EXIT = False
+SAVE_ON_EXIT = True
 SAVE_EACH_CYCLE = True
 
 # diccionario de archivo de guardado
@@ -49,16 +50,20 @@ def saveGame():
 def readSaveFile():
     # lectura del archivo de guardado
     if os.path.isfile(FILE):
+        # Si existe, se lee el archivo
         with open(FILE, "r") as readFile:
             puntuaciones = json.load(readFile)
+            # Si el jugador no se encuentra dentro del archivo se crea un espacio para él
             if player not in puntuaciones:
                 print(msg["notPlayerExist"])
                 puntuaciones[player] = {"games": 0,
-                                        "wins": 0, "loses": 0, "draws": 0}
+                                        "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
+                                        "totalTime": totalTime}
                 print(puntuaciones[player])
             return puntuaciones
     else:
-        return {player: {"games": 0, "wins": 0, "loses": 0, "draws": 0}}
+        return {player: {"games": 0, "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
+                        "totalTime": totalTime}}
 
 
 def updateGameStats(result):
@@ -80,25 +85,40 @@ def clearScreen():
 
 
 def closeGame():
-    
+    clearScreen()
+    # Actualizo el tiempo de juego en la partida actual
+    gmTime = updateTimeStats()
+    # Actualizo el tiempo total del jugador
+    updateTotalTimeStats()
+    print(msg["time"])
+    print(time.strftime("\t%H:%M:%S", gmTime))
+
     if SAVE_ON_EXIT:
         saveGame()
-    clearScreen()
-    elapsedTime = (time.time() - startTime)
-    seconds = {"seconds": elapsedTime}
-    print(msg["time"].format(**seconds))
-    
-    
+
     """{var1}".format({"var1":"foo"})
     msg["elapsedTime"].format({"elapsedTime": elapsedTime})
     """
-    
+
     input()
     clearScreen()
     print(msg["exit"])
     input()
     clearScreen()
     exit()
+
+
+def updateTimeStats():
+    elapsedTime = (time.time() - startTime)
+    gameStats[player]['time'] = elapsedTime
+    return time.gmtime(elapsedTime)
+
+
+def updateTotalTimeStats():
+    elapsedTime = (time.time() - startTime)
+    totalTime = gameStats[player]['totalTime']
+    totalTime = totalTime + elapsedTime
+    gameStats[player]['totalTime'] = totalTime
 
 
 def main():
@@ -118,6 +138,7 @@ def main():
         # abrimos y escribimos datos en el archivo de guardado
         # SaveManager.SaveManager().autosave(game)
         updateGameStats(game)
+        updateTimeStats()
         if SAVE_EACH_CYCLE:
             saveGame()
         # imprimimos los datos en pantalla
@@ -126,10 +147,14 @@ def main():
         # borramos la pantalla para mayor comodidad del usuario
         clearScreen()
 
+
 startTime = time.time()
+elapsedTime = (time.time() - startTime)
+
 
 clearScreen()
 player = str(input(msg["jugador"]))
+player = player.upper()
 gameStats = readSaveFile()
 
 main()
