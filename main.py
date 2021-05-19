@@ -29,10 +29,6 @@ import logic
 import output
 from messages import msg
 
-global totalKeys
-global totalGoodKeys
-totalKeys = 0
-totalGoodKeys = 0
 
 RPS = ["R", "P", "S", "K", "L", "E"]
 answer = ["Y", "N"]
@@ -55,8 +51,8 @@ def userInput():
         intro = str(
             input(msg["intro"]))
         intro = intro.upper()
-        # totalKeys += 1
-    # totalGoodKeys += 1
+        updateTotalKeys()
+    updateGoodKeys()
     return intro
 
 
@@ -71,27 +67,24 @@ def readSaveFile():
     if os.path.isfile(FILE):
         # Si existe, se lee el archivo
         with open(FILE, "r") as readFile:
-            gameStats = json.load(readFile)
+            puntuaciones = json.load(readFile)
             # Si el jugador no se encuentra dentro del archivo se crea un espacio para él
-            if player not in gameStats:
+            if player not in puntuaciones:
                 print(msg["notPlayerExist"])
-                gameStats[player] = {"games": 0,
-                                        "wins": 0, "loses": 0, "draws": 0, }
-                metrics[player] = {"Seconds": elapsedTime,
-                                        "totalSeconds": totalTime, "totalKeys": 0,
+                puntuaciones[player] = {"games": 0,
+                                        "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
+                                        "totalTime": totalTime, "totalKeys": 0,
                                         "totalGoodKeys": 0}
-                print(gameStats[player])
-            return gameStats
+                print(puntuaciones[player])
+            return puntuaciones
     else:
         return {player: {"games": 0, "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
-                        "totalTime": totalTime, "totalKeys": 0, "totalGoodKeys": 0}}
+                         "totalTime": totalTime, "totalKeys": 0, "totalGoodKeys": 0}}
 
 
 def updateGameStats(result):
     # se suma el resultado de la partida
     gameStats[player]["games"] += 1
-    # gameStats[player]["totalKeys"] = gameStats[player]["totalKeys"] + logic.totalKeys
-    # gameStats[player]["totalGoodKeys"] = gameStats[player]["totalGoodKeys"] + totalGoodKeys
     if result == 0:
         # gameStats[["wins"]] += 1
         gameStats[player]['wins'] += 1
@@ -110,11 +103,16 @@ def clearScreen():
 def closeGame():
     clearScreen()
     # Actualizo el tiempo de juego en la partida actual
-    gmTime = updateTimeStats()
+    gmActualTime = updateTimeStats()
     # Actualizo el tiempo total del jugador
-    updateTotalTimeStats()
+    gmTotalTime = updateTotalTimeStats()
+
+    # Muestro en pantalla el tiempo
     print(msg["time"])
-    print(time.strftime("\t%H:%M:%S", gmTime))
+    print(time.strftime("\t%H:%M:%S", gmActualTime))
+
+    print(msg["totalTime"])
+    print(time.strftime("\t%H:%M:%S", gmTotalTime))
 
     if SAVE_ON_EXIT:
         saveGame()
@@ -132,8 +130,11 @@ def closeGame():
 
 
 def updateTimeStats():
+    # Tomo el tiempo total de la partida
     elapsedTime = (time.time() - startTime)
+    # Guardo el valor
     gameStats[player]['time'] = elapsedTime
+    # formateo el valor
     return time.gmtime(elapsedTime)
 
 
@@ -142,14 +143,22 @@ def updateTotalTimeStats():
     totalTime = gameStats[player]['totalTime']
     totalTime = totalTime + elapsedTime
     gameStats[player]['totalTime'] = totalTime
+    return time.gmtime(totalTime)
 
 
 def playerNameInput():
     playerName = str(input(msg["jugador"]))
     playerName = playerName.upper()
-    # totalKeys += 1
-    # totalGoodKeys += 1
     return playerName
+
+
+def updateTotalKeys():
+    gameStats[player]['totalKeys'] += 1
+
+
+def updateGoodKeys():
+    gameStats[player]['totalGoodKeys'] += 1
+
 
 def main():
     # fileExists()
@@ -184,6 +193,10 @@ elapsedTime = (time.time() - startTime)
 
 clearScreen()
 player = playerNameInput()
+"""
+updateTotalKeys()
+updateGoodKeys()"""
+
 gameStats = readSaveFile()
 
 main()

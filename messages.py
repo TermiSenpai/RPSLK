@@ -15,6 +15,7 @@ msg = {
     "exist": "\nEl jugador tiene un archivo de guardado.",
     "notPlayerExist": "\nEl jugador no existe en este fichero, creando un espacio de guardado...",
     "payerExist": "\nEl jugador tiene una partida ya existente.",
-    "time": "\nEl jugador estuvo jugando durante: "
+    "time": "\nEl jugador estuvo jugando durante: ",
+    "totalTime": "\nEl jugador ha jugado en total:",
 
 }
