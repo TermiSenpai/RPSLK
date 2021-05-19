@@ -29,16 +29,35 @@ import logic
 import output
 from messages import msg
 
+global totalKeys
+global totalGoodKeys
+totalKeys = 0
+totalGoodKeys = 0
 
+RPS = ["R", "P", "S", "K", "L", "E"]
 answer = ["Y", "N"]
 FILE = "Saves.json"
 totalTime = 0.0
+
 
 SAVE_ON_EXIT = True
 SAVE_EACH_CYCLE = True
 
 # diccionario de archivo de guardado
 gameStats = None
+metrics = None
+
+
+def userInput():
+    intro = "j"
+    while intro not in RPS:
+        print(msg["toExit"])
+        intro = str(
+            input(msg["intro"]))
+        intro = intro.upper()
+        # totalKeys += 1
+    # totalGoodKeys += 1
+    return intro
 
 
 def saveGame():
@@ -52,23 +71,27 @@ def readSaveFile():
     if os.path.isfile(FILE):
         # Si existe, se lee el archivo
         with open(FILE, "r") as readFile:
-            puntuaciones = json.load(readFile)
+            gameStats = json.load(readFile)
             # Si el jugador no se encuentra dentro del archivo se crea un espacio para él
-            if player not in puntuaciones:
+            if player not in gameStats:
                 print(msg["notPlayerExist"])
-                puntuaciones[player] = {"games": 0,
-                                        "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
-                                        "totalTime": totalTime}
-                print(puntuaciones[player])
-            return puntuaciones
+                gameStats[player] = {"games": 0,
+                                        "wins": 0, "loses": 0, "draws": 0, }
+                metrics[player] = {"Seconds": elapsedTime,
+                                        "totalSeconds": totalTime, "totalKeys": 0,
+                                        "totalGoodKeys": 0}
+                print(gameStats[player])
+            return gameStats
     else:
         return {player: {"games": 0, "wins": 0, "loses": 0, "draws": 0, "time": elapsedTime,
-                        "totalTime": totalTime}}
+                        "totalTime": totalTime, "totalKeys": 0, "totalGoodKeys": 0}}
 
 
 def updateGameStats(result):
     # se suma el resultado de la partida
     gameStats[player]["games"] += 1
+    # gameStats[player]["totalKeys"] = gameStats[player]["totalKeys"] + logic.totalKeys
+    # gameStats[player]["totalGoodKeys"] = gameStats[player]["totalGoodKeys"] + totalGoodKeys
     if result == 0:
         # gameStats[["wins"]] += 1
         gameStats[player]['wins'] += 1
@@ -121,13 +144,20 @@ def updateTotalTimeStats():
     gameStats[player]['totalTime'] = totalTime
 
 
+def playerNameInput():
+    playerName = str(input(msg["jugador"]))
+    playerName = playerName.upper()
+    # totalKeys += 1
+    # totalGoodKeys += 1
+    return playerName
+
 def main():
     # fileExists()
     while True:
         # Generación del valor para el bot
         botMain = logic.botElection()
         # Introducción del valor del usuario
-        myInput = logic.userInput()
+        myInput = userInput()
         # Creamos un valor para poder comparar
         victoryCompare = logic.makingTheResult(myInput, botMain)
         # comprobamos y aseguramos la elección del usuario
@@ -153,8 +183,7 @@ elapsedTime = (time.time() - startTime)
 
 
 clearScreen()
-player = str(input(msg["jugador"]))
-player = player.upper()
+player = playerNameInput()
 gameStats = readSaveFile()
 
 main()
