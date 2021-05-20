@@ -111,16 +111,14 @@ def closeGame():
     print(msg["time"])
     print(time.strftime("\t%H:%M:%S", gmActualTime))
 
+    # Muestro en pantalla el tiempo total del jugador
+
     print(msg["totalTime"])
     print(time.strftime("\t%H:%M:%S", gmTotalTime))
 
     if SAVE_ON_EXIT:
         saveGame()
-
-    """{var1}".format({"var1":"foo"})
-    msg["elapsedTime"].format({"elapsedTime": elapsedTime})
-    """
-
+    # Espero a que el usuario quiera continuar
     input()
     clearScreen()
     print(msg["exit"])
@@ -139,15 +137,21 @@ def updateTimeStats():
 
 
 def updateTotalTimeStats():
+    # calculo el tiempo que lleva en la partida
     elapsedTime = (time.time() - startTime)
+    # Tomo el valor del archivo de guardado y lo guardo
     totalTime = gameStats[player]['totalTime']
+    # Sumo el tiempo que había con el nuevo
     totalTime = totalTime + elapsedTime
+    # Lo guardo en las estadisticas del jugador
     gameStats[player]['totalTime'] = totalTime
     return time.gmtime(totalTime)
 
 
 def playerNameInput():
+    # Input para que el jugador introduzca su nombre
     playerName = str(input(msg["jugador"]))
+    # El nombre se guarda en mayúsculas
     playerName = playerName.upper()
     return playerName
 
@@ -193,9 +197,6 @@ elapsedTime = (time.time() - startTime)
 
 clearScreen()
 player = playerNameInput()
-"""
-updateTotalKeys()
-updateGoodKeys()"""
 
 gameStats = readSaveFile()
 
